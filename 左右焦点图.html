@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+        body, ul, ol, li, img {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        #box {
+            width: 490px;
+            height: 170px;
+            padding: 5px;
+            position: relative;
+            border: 1px solid #ccc;
+            margin: 100px auto 0;
+            overflow: hidden;
+        }
+
+        .ad {
+            width: 490px;
+            height: 170px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #box img {
+            width: 490px;
+        }
+
+        .ad ol {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+        }
+
+        .ad ol li {
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            border: 1px solid #ccc;
+            text-align: center;
+            background: #fff;
+            float: left;
+            margin-right: 10px;
+            cursor: pointer;
+            _display: inline;
+        }
+
+        .ad ol li.current {
+            background: yellow;
+        }
+
+        .ad ul li {
+            float: left;
+        }
+
+        .ad ul {
+            position: absolute;
+            top: 0;
+            width: 2940px;
+        }
+
+        .ad ul li.current {
+            display: block;
+        }
+
+        #arr {
+            display: none;
+        }
+
+        #arr span {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            margin-top: -20px;
+            background: #000;
+            cursor: pointer;
+            line-height: 40px;
+            text-align: center;
+            font-weight: bold;
+            font-family: '黑体';
+            font-size: 30px;
+            color: #fff;
+            opacity: 0.3;
+            border: 1px solid #fff;
+        }
+
+        #arr #right {
+            right: 5px;
+            left: auto;
+        }
+    </style>
+    <script>
+        window.onload = function (){
+            var box = document.getElementById("box");
+            var ad = document.getElementsByClassName("ad")[0];
+            var imgsWidth = ad.offsetWidth;
+            var imgs = document.getElementById("imgs");
+            var arr = document.getElementById("arr");
+            var left = document.getElementById("left");
+            var right = document.getElementById("right");
+
+            //功能1.左右箭头显示
+            box.onmouseover = function (){
+                arr.style.display = "block";
+            }
+            box.onmouseout = function (){
+                arr.style.display = "none";
+            }
+            //需求2:点击右侧三角图片却换到下一张;左侧切换到上一张;(伴随点亮盒子)
+            //不能在使用index做索引值了,需要自定义索引值
+            //自定义索引值;
+            var index =0;
+            right.onclick = function (){
+                index++;
+                if(index===5){
+                    index=4;//走到索引值为5的时候,按说应该显示第6张图片,但是没有底6张图,所以还让显示第5张图,也就是索引值是4的那张
+                }
+                //移动ul
+                animate(imgs,-imgsWidth*index);
+            }
+
+
+            left.onclick = function (){
+                index--;
+                if(index===-1){
+                    index=0;//走到索引值为5的时候,按说应该显示第6张图片,但是没有底6张图,所以还让显示第5张图,也就是索引值是4的那张
+                }
+                //移动ul
+                animate(imgs,-imgsWidth*index);
+            }
+
+
+
+
+            //封装animate方法
+            function animate(ele,target) {
+                //要用定时器,先清除定时器;
+                clearInterval(ele.timer);
+                //每个盒子一个定时器;把定时器作为盒子的属性设置;(自定义属性)
+                ele.timer = setInterval(function () {
+                    //步长不能永远为10; 因为步长的取值要经过计算;
+                    var step = target > ele.offsetLeft ? 10 : -10;
+                    //移动盒子
+                    ele.style.left = ele.offsetLeft + step + "px";
+
+                    //判断:到达目标位置停止定时器
+                    //解决小数问题;  目标位置和当前位置之间的距离不足一个步长的时候;
+                    if (Math.abs(target - ele.offsetLeft) <= Math.abs(step)) {
+                        //设置目标位置为target,并清除定时器;
+                        ele.style.left = target + "px";
+                        clearInterval(ele.timer);
+                    }
+                }, 10);
+            }
+
+        }
+    </script>
+
+</head>
+<body>
+    <div id="box" class="all">
+        <div class="ad">
+            <ul id="imgs">
+                <li><img src="images/1.jpg"/></li>
+                <li><img src="images/2.jpg"/></li>
+                <li><img src="images/3.jpg"/></li>
+                <li><img src="images/4.jpg"/></li>
+                <li><img src="images/5.jpg"/></li>
+            </ul>
+        </div>
+        <!--左右小三角-->
+        <div id="arr">
+            <span id="left"><</span>
+            <span id="right">></span>
+        </div>
+    </div>
+</body>
+</html>
